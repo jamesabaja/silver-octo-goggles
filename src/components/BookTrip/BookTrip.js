@@ -7,7 +7,8 @@ class BookTrip extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      trips: []
+      trips: [],
+      booking: []
     };
   }
 
@@ -15,6 +16,17 @@ class BookTrip extends Component {
     axios.get('https://tickets-backend.herokuapp.com/trips/')
     .then(response => {
       this.setState({trips: response.data});
+    });
+    axios.get(`https://tickets-backend.herokuapp.com/booking/${localStorage.getItem('username')}`)
+    .then(response => {
+      response.data.map((item, i) => {
+        axios.get(`https://tickets-backend.herokuapp.com/trips/${item.tripID}/`)
+        .then(response => {
+          this.setState({
+            booking: [...this.state.booking, response.data]
+          });
+        })
+      });
     });
   }
 
