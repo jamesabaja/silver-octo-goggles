@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import TabsAdmin from '../TabsAdmin/TabsAdmin';
+import {Button} from 'reactstrap';
 
 class HomeAdmin extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    
-    }
+  }
+
+  logOut = () => {
+    this.props.history.push('/')
   }
 
   render() {
@@ -14,6 +16,7 @@ class HomeAdmin extends Component {
       <div className='container'>
         <TabsAdmin active={'dashboard'}/>
         <h4>Welcome back, Admin.</h4>
+        <Button color='warning' outline onClick={this.logOut}>Log out</Button>
       </div>
     );
   }

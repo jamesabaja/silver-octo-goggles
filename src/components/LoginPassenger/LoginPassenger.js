@@ -18,7 +18,7 @@ class LoginPassenger extends Component {
 
   logIn = () => {
     this.setState({isLoading: true, invalid: false});
-    axios.get(`http://tickets-backend.herokuapp.com/passengers/${this.state.username}/`)
+    axios.get(`https://tickets-backend.herokuapp.com/passengers/${this.state.username}/`)
     .then(response => {
       if(response.status === 200) {
         localStorage.setItem('username', this.state.username);
