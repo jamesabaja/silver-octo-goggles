@@ -40,6 +40,7 @@ class DeleteTrip extends Component {
         <Table>
         <thead>
             <tr>
+              <th>Trip ID</th>
               <th>Departure Date</th>
               <th>Departure Time</th>
               <th>Source Terminal</th>
@@ -52,6 +53,7 @@ class DeleteTrip extends Component {
           <tbody>
           {this.state.trips.length > 0 && this.state.trips.map((item, i) => {
             return(<tr>
+              <td>{item.tripID}</td>
               <td>{item.departureDate}</td>
               <td>{item.departureTime}</td>
               <td>{item.sourceTerminal}</td>

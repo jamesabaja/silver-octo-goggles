@@ -9,11 +9,13 @@ class ViewTrips extends Component {
     this.state = { 
       booking: [],
       ratings: [],
-      isCancelling: false
+      isCancelling: false,
+      isLoading: false
     }
   }
 
   componentWillMount() {
+    this.setState({isLoading: true});
     axios.get(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/`)
     .then(response => {
       response.data.map((item, i) => {
@@ -25,8 +27,9 @@ class ViewTrips extends Component {
           });
         })
       });
-    })
-  }  
+      this.setState({isLoading: false});
+    });
+  }
 
   cancelTrip = (tripID) => {
     this.setState({isCancelling: true});
@@ -40,6 +43,14 @@ class ViewTrips extends Component {
         return true;
       })});
     })
+    axios.delete(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/${tripID}/`)
+    .then(response => {
+      this.setState({isCancelling: false});
+      axios.get(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/`)
+      .then(response => {
+        window.location.reload();
+      });
+    });
   } 
 
   updateRating = (tripID) => {
@@ -55,9 +66,13 @@ class ViewTrips extends Component {
         <Alert color='danger' isOpen={this.state.isCancelling}>
           Cancelling trip, please wait ...
         </Alert>
-        <Table>
+        <Alert color="light" isOpen={this.state.isLoading}>
+          Loading your booked trips, please wait ...
+        </Alert>
+        {!this.state.isLoading && this.state.booking.length > 0 && <Table>
         <thead>
             <tr>
+              <th>Trip ID</th>
               <th>Departure Date</th>
               <th>Departure Time</th>
               <th>Source Terminal</th>
@@ -70,17 +85,19 @@ class ViewTrips extends Component {
           <tbody>
           {this.state.booking.length > 0 && this.state.booking.map((item, i) => {
             return(<tr>
+              <td>{item.tripID}</td>
               <td>{item.departureDate}</td>
               <td>{item.departureTime}</td>
               <td>{item.sourceTerminal}</td>
               <td>{item.destinationTerminal}</td>
-              <td>{this.state.ratings[i]}</td>
-              <td><Button color='warning' onClick={() => this.updateRating(item.tripID)}>Update Rating</Button></td>
+              <td>{this.state.ratings[i] > 0 ? this.state.ratings[i] : 'No rating yet'}</td>
+              {this.state.ratings[i] > 0 ? <td><Button color='warning' onClick={() => this.updateRating(item.tripID)}>Update Rating</Button></td> : <td><Button color='success' onClick={() => this.updateRating(item.tripID)}>Add Rating</Button></td>}
               <td><Button color='danger' onClick={() => this.cancelTrip(item.tripID)}>Cancel Trip</Button></td>
             </tr>);
           })} 
           </tbody>
-        </Table>
+        </Table>}
+        {this.state.booking.length === 0 && !this.state.isLoading && <h5 style={{textAlign: 'center'}}>No booked trips yet. Click <a href='/passenger/book/trip'>here</a> to book some trips.</h5>} 
       </div>
     );
   }

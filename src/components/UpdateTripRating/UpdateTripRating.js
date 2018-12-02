@@ -18,7 +18,8 @@ class UpdateTripRating extends Component {
       seatsLeft: '',
       rating: '',
       isSuccessful: false,
-      tripID: ''
+      tripID: '',
+      isOver: false
     };
   }
 
@@ -50,16 +51,24 @@ class UpdateTripRating extends Component {
   }
 
   updateTrip = () => {
-    this.setState({isSuccessful: false});
-    axios.put(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/${localStorage.getItem('tripID')}/`, {
-      'tripID': this.state.tripID,
-      'userID': localStorage.getItem('username'),
-      'rating': parseInt(this.state.rating)
-    }).then(response => {
-      this.setState({isSuccessful: true});
-      localStorage.removeItem('tripID');
-      this.props.history.push('/passenger/view/trips');
-    });
+    if(parseInt(this.state.rating, 10) > 5 || parseInt(this.state.rating, 10) < 0) {
+      this.setState({isOver: true});
+    }else {
+      this.setState({isSuccessful: false});
+      axios.put(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/${localStorage.getItem('tripID')}/`, {
+        'tripID': this.state.tripID,
+        'userID': localStorage.getItem('username'),
+        'rating': parseInt(this.state.rating)
+      }).then(response => {
+        this.setState({isSuccessful: true});
+        localStorage.removeItem('tripID');
+        this.props.history.push('/passenger/view/trips');
+      });
+    }
+  }
+
+  onDismiss = (name) => {
+    this.setState({[name]: false});
   }
 
   render() {
@@ -70,13 +79,17 @@ class UpdateTripRating extends Component {
         <br /> 
         <br />
         <h4>Update Trip Rating</h4>
+        <Alert color="danger" isOpen={this.state.isOver} toggle={() => this.onDismiss('isOver')}>
+          Rating must only be within 1-5.
+        </Alert>
+
         <Form>
           <FormGroup>
             <Label for="tripID">Trip ID</Label> <span style={{color: 'red'}}>*</span>
-            <Input type="text" name="tripID" id="tripID" onChange={this.onChange} value={this.state.tripID}/>
+            <Input disabled type="text" name="tripID" id="tripID" onChange={this.onChange} value={this.state.tripID}/>
           </FormGroup>
           <FormGroup>
-            <Label for="rating">Rating</Label> <span style={{color: 'red'}}>*</span>
+            <Label for="rating">Rating: 1 (Trip was unbelievably bad) to 5 (Trip was exceptional)</Label> <span style={{color: 'red'}}>*</span>
             <Input type="text" name="rating" id="rating" onChange={this.onChange} value={this.state.rating} />
           </FormGroup>
         </Form>

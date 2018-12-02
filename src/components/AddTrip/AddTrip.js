@@ -17,7 +17,8 @@ class AddTrip extends Component {
       departureDate: '',
       departureTime: '',
       seatsLeft: '',
-      isSuccessful: false
+      isSuccessful: false,
+      isIncomplete: false
     };
   }
 
@@ -49,18 +50,23 @@ class AddTrip extends Component {
   }
 
   addTrip = () => {
-    this.setState({isSuccessful: false});
-    axios.post('https://tickets-backend.herokuapp.com/trips/', {
-      'tripID': this.state.tripID,
-      'sourceTerminal': this.state.selectedDeparture,
-      'destinationTerminal': this.state.selectedDestination,
-      'price': parseInt(this.state.price, 10),
-      'seatsLeft': parseInt(this.state.seatsLeft, 10),
-      'departureDate': this.state.departureDate,
-      'departureTime': this.state.departureTime
-    }).then(response => {
-      this.setState({tripID: '', selectedDeparture: '', selectedDestination: '', price: '', seatsLeft: '', departureDate: '', departureTime: '', isSuccessful: true});
-    });
+    if(this.state.tripID === '' || this.state.selectedDeparture === '' || this.state.selectedDestination === '' || this.state.price === '' || this.state.seatsLeft === '' || this.state.departureDate === '' || this.state.departureTime === '') {
+      this.setState({isIncomplete: true});
+    }else {
+      this.setState({isSuccessful: false, isIncomplete: false});
+      axios.post('https://tickets-backend.herokuapp.com/trips/', {
+        'tripID': this.state.tripID,
+        'sourceTerminal': this.state.selectedDeparture,
+        'destinationTerminal': this.state.selectedDestination,
+        'price': parseInt(this.state.price, 10),
+        'seatsLeft': parseInt(this.state.seatsLeft, 10),
+        'departureDate': this.state.departureDate,
+        'departureTime': this.state.departureTime
+      }).then(response => {
+        this.setState({tripID: '', selectedDeparture: '', selectedDestination: '', price: '', seatsLeft: '', departureDate: '', departureTime: '', isSuccessful: true});
+      });
+    }
+    
   }
 
   onChange = (event) => {
@@ -80,7 +86,10 @@ class AddTrip extends Component {
         <TabsAdmin active={'add'} />
         <h4>Add Trip</h4>
         <Alert color="success" isOpen={this.state.isSuccessful} toggle={() => this.onDismiss('isSuccessful')}>
-          Successfully added trip. Go to 'Delete a Trip' to view your other added trips. 
+          Successfully added trip. Click <a href='/admin/view'>here</a> to view your other added trips. 
+        </Alert>
+        <Alert color="danger" isOpen={this.state.isIncomplete} toggle={() => this.onDismiss('isIncomplete')}>
+          Please complete all fields. No field must be left blank. 
         </Alert>
         <Form>
           <FormGroup>
@@ -92,11 +101,11 @@ class AddTrip extends Component {
             <Input type="text" name="price" id="price" onChange={this.onChange} />
           </FormGroup>
           <FormGroup>
-            <Label for="departureDate">Departure Date</Label> <span style={{color: 'red'}}>*</span>
+            <Label for="departureDate">Departure Date (FORMAT: YYYY-MM-DD)</Label> <span style={{color: 'red'}}>*</span>
             <Input type="text" name="departureDate" id="departureDate" onChange={this.onChange} />
           </FormGroup>
           <FormGroup>
-            <Label for="departureTime">Departure Time</Label> <span style={{color: 'red'}}>*</span>
+            <Label for="departureTime">Departure Time (24-HOUR FORMAT(00:00:00 to 23:59:59) : HH:MM:SS)</Label> <span style={{color: 'red'}}>*</span>
             <Input type="text" name="departureTime" id="departureTime" onChange={this.onChange} />
           </FormGroup>
           <FormGroup>

@@ -17,11 +17,14 @@ class UpdateTrip extends Component {
       departureDate: '',
       departureTime: '',
       seatsLeft: '',
-      isSuccessful: false
+      isSuccessful: false,
+      isLoading: false,
+      isUpdating: false
     };
   }
 
   componentWillMount() {
+    this.setState({isLoading: true});
     axios.get(`https://tickets-backend.herokuapp.com/trips/${localStorage.getItem('tripID')}/`)
     .then(response => {
       let data = response.data;
@@ -29,12 +32,12 @@ class UpdateTrip extends Component {
     });
     axios.get('https://tickets-backend.herokuapp.com/terminals/')
     .then(response => {
-      this.setState({terminals: response.data});
+      this.setState({terminals: response.data, isLoading: false});
     });
   }
 
   goBack = () => {
-    this.props.history.push('/admin/delete');
+    this.props.history.push('/admin/view');
   }
 
   toggleDeparture = () => {
@@ -69,7 +72,7 @@ class UpdateTrip extends Component {
   }
 
   updateTrip = () => {
-    this.setState({isSuccessful: false});
+    this.setState({isSuccessful: false, isUpdating: true});
     axios.put(`https://tickets-backend.herokuapp.com/trips/${localStorage.getItem('tripID')}/`, {
       'tripID': this.state.tripID,
       'sourceTerminal': this.state.selectedDeparture,
@@ -79,9 +82,9 @@ class UpdateTrip extends Component {
       'departureDate': this.state.departureDate,
       'departureTime': this.state.departureTime
     }).then(response => {
-      this.setState({isSuccessful: true});
+      this.setState({isSuccessful: true, isUpdating: false});
       localStorage.removeItem('tripID');
-      this.props.history.push('/admin/delete');
+      this.props.history.push('/admin/view');
     });
   }
 
@@ -93,6 +96,12 @@ class UpdateTrip extends Component {
         <br /> 
         <br />
         <h4>Update Trip</h4>
+        <Alert color="light" isOpen={this.state.isLoading}>
+          Loading trip details, please wait ...
+        </Alert>
+        <Alert color="light" isOpen={this.state.isUpdating}>
+          Updating trip details to database, please wait ...
+        </Alert>
         <Form>
           <FormGroup>
             <Label for="tripID">Trip ID</Label> <span style={{color: 'red'}}>*</span>
@@ -103,11 +112,11 @@ class UpdateTrip extends Component {
             <Input type="text" name="price" id="price" onChange={this.onChange} value={this.state.price} />
           </FormGroup>
           <FormGroup>
-            <Label for="departureDate">Departure Date</Label> <span style={{color: 'red'}}>*</span>
+            <Label for="departureDate">Departure Date (FORMAT: YYYY-MM-DD)</Label> <span style={{color: 'red'}}>*</span>
             <Input type="text" name="departureDate" id="departureDate" onChange={this.onChange} value={this.state.departureDate}/>
           </FormGroup>
           <FormGroup>
-            <Label for="departureTime">Departure Time</Label> <span style={{color: 'red'}}>*</span>
+            <Label for="departureTime">Departure Time (24-HOUR FORMAT(00:00:00 to 23:59:59) : HH:MM:SS)</Label> <span style={{color: 'red'}}>*</span>
             <Input type="text" name="departureTime" id="departureTime" onChange={this.onChange} value={this.state.departureTime} />
           </FormGroup>
           <FormGroup>

@@ -12,7 +12,7 @@ const TabsAdmin = ({active}) => {
           <NavLink href="/admin/add" active={active === 'add' ? true : false}>Add New Trip</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink href="/admin/delete" active={active === 'delete' ? true : false}>View and Delete Trips</NavLink>
+          <NavLink href="/admin/view" active={active === 'delete' ? true : false}>View and Delete Trips</NavLink>
         </NavItem>
         {/* <NavItem>
           <NavLink href="/admin/update" active={active === 'update' ? true : false}>Update Trip Details</NavLink>

@@ -31,7 +31,7 @@ class App extends Component {
           <Route exact path='/admin' component={HomeAdmin} />
           <Route exact path='/passenger/dashboard' component={HomePassenger} /> 
           <Route exact path='/admin/add' component={AddTrip} />
-          <Route exact path='/admin/delete' component={DeleteTrip} />
+          <Route exact path='/admin/view' component={DeleteTrip} />
           <Route exact path='/admin/update' component={UpdateTrip} />
           <Route exact path='/passenger/book/trip' component={BookTrip} />
           <Route exact path='/passenger/view/trips' component={ViewTrips} />
