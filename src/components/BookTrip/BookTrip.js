@@ -53,6 +53,11 @@ class BookTrip extends Component {
     })
     .then(response => {
       if(response.status === 201) {
+        axios.post('https://tickets-backend.herokuapp.com/rating/', {
+          'userID': localStorage.getItem('username'),
+          'tripID': tripID,
+          'rating': 0
+        });
         this.setState({isSuccessful: true, alreadyExists: false});
       }
       this.setState({bookingTrip: false});

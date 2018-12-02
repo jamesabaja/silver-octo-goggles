@@ -8,18 +8,20 @@ class ViewTrips extends Component {
     super(props);
     this.state = { 
       booking: [],
+      ratings: [],
       isCancelling: false
     }
   }
 
   componentWillMount() {
-    axios.get(`https://tickets-backend.herokuapp.com/booking/${localStorage.getItem('username')}/`)
+    axios.get(`https://tickets-backend.herokuapp.com/rating/${localStorage.getItem('username')}/`)
     .then(response => {
       response.data.map((item, i) => {
         axios.get(`https://tickets-backend.herokuapp.com/trips/${item.tripID}/`)
         .then(response => {
           this.setState({
-            booking: [...this.state.booking, response.data]
+            booking: [...this.state.booking, response.data],
+            ratings: [...this.state.ratings, item.rating]
           });
         })
       });
@@ -40,6 +42,11 @@ class ViewTrips extends Component {
     })
   } 
 
+  updateRating = (tripID) => {
+    localStorage.setItem('tripID', tripID);
+    this.props.history.push('/passenger/update_rating');
+  }
+
   render() {
     return(
       <div className='container'>
@@ -55,6 +62,8 @@ class ViewTrips extends Component {
               <th>Departure Time</th>
               <th>Source Terminal</th>
               <th>Destination Terminal</th>
+              <th>Rating</th>
+              <th></th>
               <th></th>
             </tr>
           </thead>
@@ -65,6 +74,8 @@ class ViewTrips extends Component {
               <td>{item.departureTime}</td>
               <td>{item.sourceTerminal}</td>
               <td>{item.destinationTerminal}</td>
+              <td>{this.state.ratings[i]}</td>
+              <td><Button color='warning' onClick={() => this.updateRating(item.tripID)}>Update Rating</Button></td>
               <td><Button color='danger' onClick={() => this.cancelTrip(item.tripID)}>Cancel Trip</Button></td>
             </tr>);
           })} 

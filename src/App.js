@@ -15,6 +15,7 @@ import UpdateTrip from './components/UpdateTrip/UpdateTrip';
 import BookTrip from './components/BookTrip/BookTrip';
 import ViewTrips from './components/ViewTrips/ViewTrips';
 import PassengerSettings from './components/PassengerSettings/PassengerSettings';
+import UpdateTripRating from './components/UpdateTripRating/UpdateTripRating';
 
 class App extends Component {
   render() {
@@ -35,6 +36,7 @@ class App extends Component {
           <Route exact path='/passenger/book/trip' component={BookTrip} />
           <Route exact path='/passenger/view/trips' component={ViewTrips} />
           <Route exact path='/passenger/settings' component={PassengerSettings} />
+          <Route exact path='/passenger/update_rating' component={UpdateTripRating} />
         </Switch>
       </div>
     );
